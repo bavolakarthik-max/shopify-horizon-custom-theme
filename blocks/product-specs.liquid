@@ -1,0 +1,131 @@
+{% comment %}
+  Product specs block
+  Shows Fabric / Fit / Care from product metafields,
+  plus a size chart that only appears on products with a "Size" option.
+{% endcomment %}
+
+{%- liquid
+  assign p = closest.product | default: product
+  assign fabric = p.metafields.custom.fabric.value
+  assign fit = p.metafields.custom.fit.value
+assign care = p.metafields.custom.care_instructions.value-%}
+
+<div class="product-specs" {{ block.shopify_attributes }}>
+  {%- if fabric != blank or fit != blank or care != blank -%}
+    <dl class="product-specs__list">
+      {%- if fabric != blank -%}
+        <div class="product-specs__row">
+          <dt>Fabric</dt>
+          <dd>{{ fabric | escape }}</dd>
+        </div>
+      {%- endif -%}
+      {%- if fit != blank -%}
+        <div class="product-specs__row">
+          <dt>Fit</dt>
+          <dd>{{ fit | escape }}</dd>
+        </div>
+      {%- endif -%}
+      {%- if care != blank -%}
+        <div class="product-specs__row">
+          <dt>Care</dt>
+          <dd>{{ care | escape | newline_to_br }}</dd>
+        </div>
+      {%- endif -%}
+    </dl>
+  {%- endif -%}
+
+  {%- if block.settings.show_size_chart and p.options contains 'Size' -%}
+    <details class="product-specs__size-chart">
+      <summary>{{ block.settings.size_chart_label | escape }}</summary>
+      <table>
+        <thead>
+          <tr><th>Size</th><th>Chest (in)</th><th>Waist (in)</th><th>Length (in)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>S</td><td>36–38</td><td>28–30</td><td>27</td></tr>
+          <tr><td>M</td><td>38–40</td><td>30–32</td><td>28</td></tr>
+          <tr><td>L</td><td>40–42</td><td>32–34</td><td>29</td></tr>
+          <tr><td>XL</td><td>42–44</td><td>34–36</td><td>30</td></tr>
+        </tbody>
+      </table>
+    </details>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .product-specs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .product-specs__list {
+    margin: 0;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .product-specs__row {
+    display: flex;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .product-specs__row dt {
+    width: 80px;
+    font-weight: 600;
+  }
+
+  .product-specs__row dd {
+    margin: 0;
+  }
+
+  .product-specs__size-chart summary {
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .product-specs__size-chart table {
+    width: 100%;
+    margin-top: 12px;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .product-specs__size-chart th,
+  .product-specs__size-chart td {
+    padding: 8px;
+    border: 1px solid #e5e5e5;
+    text-align: center;
+  }
+
+  .product-specs__size-chart th {
+    background: #f5f5f5;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product specs",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_size_chart",
+      "label": "Show size chart",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "size_chart_label",
+      "label": "Size chart label",
+      "default": "Size chart"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product specs"
+    }
+  ]
+}
+{% endschema %}
